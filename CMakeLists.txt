@@ -22,9 +22,21 @@ find_library(OPENGL_LIBRARY OpenGL)
 find_library(COREVIDEO_LIBRARY CoreVideo)
 
 # --- Exécutable principal ---
-add_executable(OpenGL main.cpp)
+add_executable(HelloTriangle src/HelloTriangle/main.cpp)
 
-target_link_libraries(OpenGL
+target_link_libraries(HelloTriangle
+        glad
+        glfw
+        ${COCOA_LIBRARY}
+        ${IOKIT_LIBRARY}
+        ${OPENGL_LIBRARY}
+        ${COREVIDEO_LIBRARY}
+)
+
+add_executable(Shaders src/Shaders/main.cpp
+        shader.h)
+
+target_link_libraries(Shaders
         glad
         glfw
         ${COCOA_LIBRARY}
