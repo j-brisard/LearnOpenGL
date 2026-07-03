@@ -23,7 +23,6 @@ find_library(COREVIDEO_LIBRARY CoreVideo)
 
 # --- Exécutable principal ---
 add_executable(HelloTriangle src/HelloTriangle/main.cpp)
-
 target_link_libraries(HelloTriangle
         glad
         glfw
@@ -33,10 +32,24 @@ target_link_libraries(HelloTriangle
         ${COREVIDEO_LIBRARY}
 )
 
-add_executable(Shaders src/Shaders/main.cpp
-        shader.h)
-
+add_executable(Shaders
+        src/Shaders/main.cpp
+        shader.h
+        )
 target_link_libraries(Shaders
+        glad
+        glfw
+        ${COCOA_LIBRARY}
+        ${IOKIT_LIBRARY}
+        ${OPENGL_LIBRARY}
+        ${COREVIDEO_LIBRARY}
+)
+
+add_executable(Textures src/Textures/main.cpp
+        shader.h
+        external/stb_image/stb_image_impl.cpp
+)
+target_link_libraries(Textures
         glad
         glfw
         ${COCOA_LIBRARY}
