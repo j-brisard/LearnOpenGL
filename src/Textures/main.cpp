@@ -20,7 +20,7 @@ void processInput(GLFWwindow *window)
 
 void init_rectangle(Shader& shader, unsigned int& new_VAO) {
 
-    Shader new_shader("shaders/vertexShader.vs","shaders/rectangleFragmentShader.fs");
+    Shader new_shader("src/Textures/shaders/vertexShader.vs","src/Textures/shaders/rectangleFragmentShader.fs");
 
     //Vertex Array Object (VAO)
     unsigned int VAO;
@@ -28,10 +28,10 @@ void init_rectangle(Shader& shader, unsigned int& new_VAO) {
     glBindVertexArray(VAO);
 
     float vertices[] = {
-        0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,  // top right
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// bottom right
-       -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,// bottom left
-       -0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,// top left
+        0.5f,  0.5f, 0.0f,      1.0f, 0.0f, 0.0f,       1.0f, 1.0f,  // top right
+        0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 0.0f,       1.0f, 0.0f,// bottom right
+       -0.5f, -0.5f, 0.0f,      0.0f, 0.0f, 1.0f,       0.0f,0.0f,// bottom left
+       -0.5f,  0.5f, 0.0f,      1.0f, 0.0f, 0.0f,       0.0f,1.0f// top left
    };
     unsigned int indices[] = {  // note that we start from 0!
         0, 1, 3,   // first triangle
@@ -50,51 +50,19 @@ void init_rectangle(Shader& shader, unsigned int& new_VAO) {
 
     //Linking Vertex Attributes
     //Our vertex shader expects the Vertex positions on index 0
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    shader = new_shader;;
-    new_VAO = VAO;
-
-}
-
-void init_triangle(Shader& shader, unsigned int& new_VAO) {
-
-    Shader new_shader("./shaders/vertexShader.vs","./shaders/triangleFragmentShader.fs");
-
-    //Vertex Array Object (VAO)
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    float vertices[] = {
-        // positions         // colors
-        0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
-       -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
-        0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top
-   };
-
-    unsigned int VBO; //Vertex Buffer Object
-    glGenBuffers(1, &VBO); //Generates a buffer and saves its id
-    glBindBuffer(GL_ARRAY_BUFFER, VBO); //Bind the VBO to GL_ARRAY_BUFFER
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); //Store the vertex data in GPU memory
-
-    //Linking Vertex Attributes
-    //Our vertex shader expects the Vertex positions on index 0
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3* sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    shader = new_shader;;
-    new_VAO = VAO;
-}
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6*sizeof(float)));
+    glEnableVertexAttribArray(2);
 
-float texCoords[] = {
-    0.0f, 0.0f,  // lower-left corner
-    1.0f, 0.0f,  // lower-right corner
-    0.5f, 1.0f   // top-center corner
-};
+    shader = new_shader;
+    new_VAO = VAO;
+
+}
 
 int main()
 {
@@ -122,25 +90,32 @@ int main()
     //Set the function to call when resizing the window
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    //Triangle Init
-    unsigned int triangleVAO;
-    Shader triangleShader;
-    init_triangle(triangleShader, triangleVAO);
+    //Rectange Init
+    unsigned int rectangleVAO;
+    Shader rectangleShader;
+    init_rectangle(rectangleShader, rectangleVAO);
 
     //Texture setup
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); //Mipmaps are only used when minimizing/downscaling
-
-    //Texture loading
-    int width, height, nrChannels;
-    unsigned char *data = stbi_load("../../resources/textures/container.jpg", &width, &height, &nrChannels, 0);
-
     unsigned int texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); //Mipmaps are only used when minimizing/downscaling
+
+    //Texture file reading
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("resources/textures/container.jpg", &width, &height, &nrChannels, 0);
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -151,15 +126,12 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        //TRIANGLE
-        triangleShader.use();
-        //Update the uniform color
-        float timeValue = glfwGetTime();
-        float brightness = (sin(timeValue) / 2.0f) + 0.5f;
-        triangleShader.setFloat("brightness", brightness);
-        //Draw the triangle
-        glBindVertexArray(triangleVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        //RECTANGLE
+        rectangleShader.use();
+        glBindTexture(GL_TEXTURE_2D, texture);
+        //Draw the rectangle
+        glBindVertexArray(rectangleVAO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
         // check and call events and swap the buffers
