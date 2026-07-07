@@ -7,6 +7,9 @@
 #include "../../shader.h"
 #include "../../external/stb_image/stb_image.h"
 
+// Stores the mixing factor between our 2 textures
+float mix_factor = 0.5f;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -16,6 +19,20 @@ void processInput(GLFWwindow *window)
 {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+    {
+        mix_factor += 0.01f;
+        if (mix_factor > 1.0f)
+            mix_factor = 1.0f;
+    }
+    else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+    {
+        mix_factor -= 0.01f;
+        if (mix_factor < 0.0f)
+            mix_factor = 0.0f;
+
+    }
+
 }
 
 void init_rectangle(Shader& shader, unsigned int& new_VAO) {
@@ -95,21 +112,41 @@ int main()
     Shader rectangleShader;
     init_rectangle(rectangleShader, rectangleVAO);
 
-    //Texture setup
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    //Textures setup
+    //Texture 1
+    unsigned int texture1;
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); //Mipmaps are only used when minimizing/downscaling
-
     //Texture file reading
     int width, height, nrChannels;
     unsigned char *data = stbi_load("resources/textures/container.jpg", &width, &height, &nrChannels, 0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+    //Texture 2
+    unsigned int texture2;
+    glGenTextures(1, &texture2);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); //Mipmaps are only used when minimizing/downscaling
+    //Texture file reading
+    data = stbi_load("resources/textures/awesomeface.png", &width, &height, &nrChannels, 0);
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else {
@@ -128,7 +165,14 @@ int main()
 
         //RECTANGLE
         rectangleShader.use();
-        glBindTexture(GL_TEXTURE_2D, texture);
+        rectangleShader.setInt("texture1", 0);
+        rectangleShader.setInt("texture2", 1);
+        rectangleShader.setFloat("mix_factor", mix_factor);
+
+        glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glActiveTexture(GL_TEXTURE1); // activate the texture unit first before binding texture
+        glBindTexture(GL_TEXTURE_2D, texture2);
         //Draw the rectangle
         glBindVertexArray(rectangleVAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
