@@ -4,8 +4,8 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "../../shader.h"
-#include "../../external/stb_image/stb_image.h"
+#include "shader.h"
+#include "stb_image/stb_image.h"
 
 // Stores the mixing factor between our 2 textures
 float mix_factor = 0.5f;

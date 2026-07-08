@@ -4,16 +4,8 @@ project(OpenGL)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# --- Glad ---
-add_library(glad STATIC external/glad/src/glad.c)
-target_include_directories(glad PUBLIC external/glad/include)
-
-# --- GLFW (binaires précompilés) ---
-add_library(glfw STATIC IMPORTED)
-set_target_properties(glfw PROPERTIES
-        IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/external/glfw/lib/libglfw3.a
-        INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/external/glfw/include
-)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/include)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/lib)
 
 # --- Frameworks macOS requis par GLFW ---
 find_library(COCOA_LIBRARY Cocoa)
@@ -21,11 +13,16 @@ find_library(IOKIT_LIBRARY IOKit)
 find_library(OPENGL_LIBRARY OpenGL)
 find_library(COREVIDEO_LIBRARY CoreVideo)
 
-# --- Exécutable principal ---
-add_executable(HelloTriangle src/HelloTriangle/main.cpp)
+# --- Cible glad (compile le .c en librairie statique) ---
+add_library(glad STATIC external/lib/glad.c)
+target_include_directories(glad PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/include)
+
+add_executable(HelloTriangle
+        src/HelloTriangle/main.cpp
+)
 target_link_libraries(HelloTriangle
         glad
-        glfw
+        glfw3
         ${COCOA_LIBRARY}
         ${IOKIT_LIBRARY}
         ${OPENGL_LIBRARY}
@@ -34,24 +31,36 @@ target_link_libraries(HelloTriangle
 
 add_executable(Shaders
         src/Shaders/main.cpp
-        shader.h
-        )
+)
 target_link_libraries(Shaders
         glad
-        glfw
+        glfw3
         ${COCOA_LIBRARY}
         ${IOKIT_LIBRARY}
         ${OPENGL_LIBRARY}
         ${COREVIDEO_LIBRARY}
 )
 
-add_executable(Textures src/Textures/main.cpp
-        shader.h
-        external/stb_image/stb_image_impl.cpp
+add_executable(Textures
+        src/Textures/main.cpp
+        external/include/stb_image/stb_image_impl.cpp
 )
 target_link_libraries(Textures
         glad
-        glfw
+        glfw3
+        ${COCOA_LIBRARY}
+        ${IOKIT_LIBRARY}
+        ${OPENGL_LIBRARY}
+        ${COREVIDEO_LIBRARY}
+)
+
+add_executable(Transformations
+        src/Transformations/main.cpp
+        external/include/stb_image/stb_image_impl.cpp
+)
+target_link_libraries(Transformations
+        glad
+        glfw3
         ${COCOA_LIBRARY}
         ${IOKIT_LIBRARY}
         ${OPENGL_LIBRARY}
