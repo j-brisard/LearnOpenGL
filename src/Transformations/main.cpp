@@ -40,7 +40,7 @@ void processInput(GLFWwindow *window)
 
 void init_rectangle(Shader& shader, unsigned int& new_VAO) {
 
-    Shader new_shader("src/Textures/shaders/vertexShader.vs","src/Textures/shaders/rectangleFragmentShader.fs");
+    Shader new_shader("src/Transformations/shaders/vertexShader.vsh","src/Transformations/shaders/rectangleFragmentShader.fsh");
 
     //Vertex Array Object (VAO)
     unsigned int VAO;
@@ -176,6 +176,15 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1); // activate the texture unit first before binding texture
         glBindTexture(GL_TEXTURE_2D, texture2);
+
+        //Transformation
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(float(sin(glfwGetTime())), float(sin(glfwGetTime())), 0.0f));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        unsigned int transformLoc = glGetUniformLocation(rectangleShader.ID, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
         //Draw the rectangle
         glBindVertexArray(rectangleVAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

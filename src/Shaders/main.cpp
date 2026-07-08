@@ -19,7 +19,7 @@ void processInput(GLFWwindow *window)
 
 void init_rectangle(Shader& shader, unsigned int& new_VAO) {
 
-    Shader new_shader("src/Shaders/shaders/vertexShader.vs","src/Shaders/shaders/rectangleFragmentShader.fs");
+    Shader new_shader("src/Shaders/shaders/vertexShader.vsh","src/Shaders/shaders/rectangleFragmentShader.fsh");
 
     //Vertex Array Object (VAO)
     unsigned int VAO;
@@ -59,7 +59,7 @@ void init_rectangle(Shader& shader, unsigned int& new_VAO) {
 
 void init_triangle(Shader& shader, unsigned int& new_VAO) {
 
-    Shader new_shader("src/Shaders/shaders/vertexShader.vs","src/Shaders/shaders/triangleFragmentShader.fs");
+    Shader new_shader("src/Shaders/shaders/vertexShader.vsh","src/Shaders/shaders/triangleFragmentShader.fsh");
 
     //Vertex Array Object (VAO)
     unsigned int VAO;
