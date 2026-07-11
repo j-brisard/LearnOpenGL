@@ -79,3 +79,16 @@ target_link_libraries(Coordinate-Systems
         ${OPENGL_LIBRARY}
         ${COREVIDEO_LIBRARY}
 )
+
+add_executable(Camera
+        src/Camera/main.cpp
+        external/include/stb_image/stb_image_impl.cpp
+)
+target_link_libraries(Camera
+        glad
+        glfw3
+        ${COCOA_LIBRARY}
+        ${IOKIT_LIBRARY}
+        ${OPENGL_LIBRARY}
+        ${COREVIDEO_LIBRARY}
+)
