@@ -19,7 +19,7 @@ void processInput(GLFWwindow *window)
 
 void init_rectangle(Shader& shader, unsigned int& new_VAO) {
 
-    Shader new_shader("src/Shaders/shaders/vertexShader.vsh","src/Shaders/shaders/rectangleFragmentShader.fsh");
+    Shader new_shader("src/GettingStarted/Shaders/shaders/vertexShader.vsh","src/GettingStarted/Shaders/shaders/rectangleFragmentShader.fsh");
 
     //Vertex Array Object (VAO)
     unsigned int VAO;

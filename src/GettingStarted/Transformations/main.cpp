@@ -40,7 +40,7 @@ void processInput(GLFWwindow *window)
 
 void init_rectangle(Shader& shader, unsigned int& new_VAO) {
 
-    Shader new_shader("src/Transformations/shaders/vertexShader.vsh","src/Transformations/shaders/rectangleFragmentShader.fsh");
+    Shader new_shader("src/GettingStarted/Transformations/shaders/vertexShader.vsh","src/GettingStarted/Transformations/shaders/rectangleFragmentShader.fsh");
 
     //Vertex Array Object (VAO)
     unsigned int VAO;

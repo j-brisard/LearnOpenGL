@@ -106,7 +106,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 void init_rectangle(Shader& shader, unsigned int& new_VAO) {
 
-    Shader new_shader("src/Camera/shaders/vertexShader.vsh","src/Camera/shaders/rectangleFragmentShader.fsh");
+    Shader new_shader("src/GettingStarted/Camera/shaders/vertexShader.vsh","src/GettingStarted/Camera/shaders/rectangleFragmentShader.fsh");
 
     //Vertex Array Object (VAO)
     unsigned int VAO;

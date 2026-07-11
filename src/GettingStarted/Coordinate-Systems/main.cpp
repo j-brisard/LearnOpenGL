@@ -6,9 +6,18 @@
 #include <GLFW/glfw3.h>
 #include "shader.h"
 #include "stb_image/stb_image.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 // Stores the mixing factor between our 2 textures
 float mix_factor = 0.5f;
+
+glm::vec3 cube_positions[] = {
+    glm::vec3(0.0f, 0.0f, 0.0f),
+    glm::vec3(1.5f, 0.0f, 0.0f),
+    glm::vec3(-1.5f, 0.0f, 0.0f),
+};
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -37,7 +46,7 @@ void processInput(GLFWwindow *window)
 
 void init_rectangle(Shader& shader, unsigned int& new_VAO) {
 
-    Shader new_shader("src/Textures/shaders/vertexShader.vsh","src/Textures/shaders/rectangleFragmentShader.fsh");
+    Shader new_shader("src/GettingStarted/Coordinate-Systems/shaders/vertexShader.vsh","src/GettingStarted/Coordinate-Systems/shaders/rectangleFragmentShader.fsh");
 
     //Vertex Array Object (VAO)
     unsigned int VAO;
@@ -45,14 +54,47 @@ void init_rectangle(Shader& shader, unsigned int& new_VAO) {
     glBindVertexArray(VAO);
 
     float vertices[] = {
-        0.5f,  0.5f, 0.0f,      1.0f, 0.0f, 0.0f,       1.0f, 1.0f,  // top right
-        0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 0.0f,       1.0f, 0.0f,// bottom right
-       -0.5f, -0.5f, 0.0f,      0.0f, 0.0f, 1.0f,       0.0f,0.0f,// bottom left
-       -0.5f,  0.5f, 0.0f,      1.0f, 0.0f, 0.0f,       0.0f,1.0f// top left
-   };
-    unsigned int indices[] = {  // note that we start from 0!
-        0, 1, 3,   // first triangle
-        1, 2, 3    // second triangle
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
     unsigned int VBO; //Vertex Buffer Object
@@ -60,21 +102,13 @@ void init_rectangle(Shader& shader, unsigned int& new_VAO) {
     glBindBuffer(GL_ARRAY_BUFFER, VBO); //Bind the VBO to GL_ARRAY_BUFFER
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); //Store the vertex data in GPU memory
 
-    unsigned int EBO; //Element Buffer Object
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
     //Linking Vertex Attributes
     //Our vertex shader expects the Vertex positions on index 0
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3* sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6*sizeof(float)));
-    glEnableVertexAttribArray(2);
 
     shader = new_shader;
     new_VAO = VAO;
@@ -107,12 +141,13 @@ int main()
     //Set the function to call when resizing the window
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    //Rectange Init
+    //Rectangle Init
     unsigned int rectangleVAO;
     Shader rectangleShader;
     init_rectangle(rectangleShader, rectangleVAO);
 
     //Textures setup
+    stbi_set_flip_vertically_on_load(true);
     //Texture 1
     unsigned int texture1;
     glGenTextures(1, &texture1);
@@ -154,14 +189,18 @@ int main()
     }
     stbi_image_free(data);
 
+    //OpenGL Setup
+    glEnable(GL_DEPTH_TEST);
+
     while(!glfwWindowShouldClose(window))
     {
         //INPUT
         processInput(window); //Check for inputs and execute eventual actions
 
-        //RENDERING
+        //Buffer Clearing
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_DEPTH_BUFFER_BIT);
 
         //RECTANGLE
         rectangleShader.use();
@@ -173,10 +212,34 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1); // activate the texture unit first before binding texture
         glBindTexture(GL_TEXTURE_2D, texture2);
-        //Draw the rectangle
+
         glBindVertexArray(rectangleVAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        //Transformations
+        glm::mat4 view = glm::mat4(1.0f);
+        // note that we're translating the scene in the reverse direction of where we want to move
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -5.0f));
+        int viewLoc = glGetUniformLocation(rectangleShader.ID, "view");
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+        glm::mat4 projection;
+        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 10.0f);
+        int projectionLoc = glGetUniformLocation(rectangleShader.ID, "projection");
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+        int modelLoc = glGetUniformLocation(rectangleShader.ID, "model");
+        for (int i = 0; i < cube_positions->length(); i++) {
+            glm::mat4 model = glm::mat4(1.0f);
+            if (!i){
+            model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 0.5f, 0.0f));
+                }
+            model = glm::translate(model,cube_positions[i]);
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+            //Draw the cube
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
         glBindVertexArray(0);
+
 
         // check and call events and swap the buffers
         glfwPollEvents();

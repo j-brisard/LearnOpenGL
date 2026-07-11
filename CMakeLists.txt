@@ -18,7 +18,7 @@ add_library(glad STATIC external/lib/glad.c)
 target_include_directories(glad PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/include)
 
 add_executable(HelloTriangle
-        src/HelloTriangle/main.cpp
+        src/GettingStarted/HelloTriangle/main.cpp
 )
 target_link_libraries(HelloTriangle
         glad
@@ -30,7 +30,7 @@ target_link_libraries(HelloTriangle
 )
 
 add_executable(Shaders
-        src/Shaders/main.cpp
+        src/GettingStarted/Shaders/main.cpp
 )
 target_link_libraries(Shaders
         glad
@@ -42,7 +42,7 @@ target_link_libraries(Shaders
 )
 
 add_executable(Textures
-        src/Textures/main.cpp
+        src/GettingStarted/Textures/main.cpp
         external/include/stb_image/stb_image_impl.cpp
 )
 target_link_libraries(Textures
@@ -55,7 +55,7 @@ target_link_libraries(Textures
 )
 
 add_executable(Transformations
-        src/Transformations/main.cpp
+        src/GettingStarted/Transformations/main.cpp
         external/include/stb_image/stb_image_impl.cpp
 )
 target_link_libraries(Transformations
@@ -68,7 +68,7 @@ target_link_libraries(Transformations
 )
 
 add_executable(Coordinate-Systems
-        src/Coordinate-Systems/main.cpp
+        src/GettingStarted/Coordinate-Systems/main.cpp
         external/include/stb_image/stb_image_impl.cpp
 )
 target_link_libraries(Coordinate-Systems
@@ -81,7 +81,7 @@ target_link_libraries(Coordinate-Systems
 )
 
 add_executable(Camera
-        src/Camera/main.cpp
+        src/GettingStarted/Camera/main.cpp
         external/include/stb_image/stb_image_impl.cpp
 )
 target_link_libraries(Camera
