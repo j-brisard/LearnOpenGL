@@ -92,3 +92,15 @@ target_link_libraries(Camera
         ${OPENGL_LIBRARY}
         ${COREVIDEO_LIBRARY}
 )
+
+add_executable(Colors
+        src/Lighting/Colors/main.cpp
+)
+target_link_libraries(Colors
+        glad
+        glfw3
+        ${COCOA_LIBRARY}
+        ${IOKIT_LIBRARY}
+        ${OPENGL_LIBRARY}
+        ${COREVIDEO_LIBRARY}
+)
