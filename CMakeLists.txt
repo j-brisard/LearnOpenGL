@@ -104,3 +104,15 @@ target_link_libraries(Colors
         ${OPENGL_LIBRARY}
         ${COREVIDEO_LIBRARY}
 )
+
+add_executable(Basic-Lighting
+        src/Lighting/Basic-Lighting/main.cpp
+)
+target_link_libraries(Basic-Lighting
+        glad
+        glfw3
+        ${COCOA_LIBRARY}
+        ${IOKIT_LIBRARY}
+        ${OPENGL_LIBRARY}
+        ${COREVIDEO_LIBRARY}
+)
