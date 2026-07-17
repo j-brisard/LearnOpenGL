@@ -212,13 +212,18 @@ int main()
         int lightColorLoc = glGetUniformLocation(cubeShader.ID, "lightColor");
         glUniform3fv(lightColorLoc, 1, glm::value_ptr(light_color));
 
+        light_position = glm::vec3(2*sin(glfwGetTime()), 1.0f, 2*cos(glfwGetTime()));
         int lightPosLoc = glGetUniformLocation(cubeShader.ID, "lightPos");
         glUniform3fv(lightPosLoc, 1, glm::value_ptr(light_position));
+
+        int viewPosLoc = glGetUniformLocation(cubeShader.ID, "viewPos");
+        glUniform3fv(viewPosLoc, 1, glm::value_ptr(camera.Position));
 
         //Transformations
 
         //Model Matrix
         glm::mat4 model = glm::mat4(1.0f);
+        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
         int modelLoc = glGetUniformLocation(cubeShader.ID, "model");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
