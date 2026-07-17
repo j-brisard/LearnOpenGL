@@ -6,6 +6,8 @@ out vec4 FragColor;
 uniform vec3 objectColor;
 uniform vec3 lightColor;
 
+in vec3 lightPosView;
+
 void main()
 {
     vec3 norm = normalize(Normal);
