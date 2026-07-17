@@ -12,6 +12,10 @@
 #include <sstream>
 #include <iostream>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 
 class Shader
 {
@@ -120,6 +124,15 @@ public:
     {
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
     }
+
+    void setVec3(const std::string &name, float x, float y, float z) const {
+        glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
+    }
+
+    void setVec3(const std::string &name, glm::vec3 vec) const {
+        glUniform3fv(glGetUniformLocation(ID, name.c_str()),1, glm::value_ptr(vec));
+    }
+
     void set4Float(const std::string &name, const float x, const float y, const float z, const float w) const
     {
         glUniform4f(ID,x, y, z, w);
