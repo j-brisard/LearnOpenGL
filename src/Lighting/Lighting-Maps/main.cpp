@@ -223,6 +223,25 @@ int main()
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
+    //Emit Map
+    unsigned int emit_map;
+    glGenTextures(1, &emit_map);
+    glBindTexture(GL_TEXTURE_2D, emit_map);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); //Mipmaps are only used when minimizing/downscaling
+    //Texture file reading
+    data = stbi_load("resources/textures/matrix.jpg", &width, &height, &nrChannels, 0);
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
 
     unsigned int cube2VAO;
     Shader cube2Shader;
@@ -262,6 +281,9 @@ int main()
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, spec_map);
         cubeShader.setInt("material.specular", 1);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, emit_map);
+        cubeShader.setInt("material.emit", 2);
         cubeShader.setFloat("material.shininess", 32.0f);
 
         //Set light properties
