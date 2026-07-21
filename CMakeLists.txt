@@ -128,3 +128,16 @@ target_link_libraries(Materials
         ${OPENGL_LIBRARY}
         ${COREVIDEO_LIBRARY}
 )
+
+add_executable(Lighting-Maps
+        src/Lighting/Lighting-Maps/main.cpp
+        external/include/stb_image/stb_image_impl.cpp
+)
+target_link_libraries(Lighting-Maps
+        glad
+        glfw3
+        ${COCOA_LIBRARY}
+        ${IOKIT_LIBRARY}
+        ${OPENGL_LIBRARY}
+        ${COREVIDEO_LIBRARY}
+)
