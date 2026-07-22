@@ -17,6 +17,8 @@ find_library(COREVIDEO_LIBRARY CoreVideo)
 add_library(glad STATIC external/lib/glad.c)
 target_include_directories(glad PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/include)
 
+find_package(assimp REQUIRED)
+
 add_executable(HelloTriangle
         src/GettingStarted/HelloTriangle/main.cpp
 )
@@ -166,4 +168,5 @@ target_link_libraries(Multiple-Lights
         ${IOKIT_LIBRARY}
         ${OPENGL_LIBRARY}
         ${COREVIDEO_LIBRARY}
+        assimp::assimp
 )
