@@ -154,3 +154,16 @@ target_link_libraries(Light-Casters
         ${OPENGL_LIBRARY}
         ${COREVIDEO_LIBRARY}
 )
+
+add_executable(Multiple-Lights
+        src/Lighting/Multiple-Lights/main.cpp
+        external/include/stb_image/stb_image_impl.cpp
+)
+target_link_libraries(Multiple-Lights
+        glad
+        glfw3
+        ${COCOA_LIBRARY}
+        ${IOKIT_LIBRARY}
+        ${OPENGL_LIBRARY}
+        ${COREVIDEO_LIBRARY}
+)
