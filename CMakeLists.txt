@@ -141,3 +141,16 @@ target_link_libraries(Lighting-Maps
         ${OPENGL_LIBRARY}
         ${COREVIDEO_LIBRARY}
 )
+
+add_executable(Light-Casters
+        src/Lighting/Light-Casters/main.cpp
+        external/include/stb_image/stb_image_impl.cpp
+)
+target_link_libraries(Light-Casters
+        glad
+        glfw3
+        ${COCOA_LIBRARY}
+        ${IOKIT_LIBRARY}
+        ${OPENGL_LIBRARY}
+        ${COREVIDEO_LIBRARY}
+)
