@@ -168,5 +168,18 @@ target_link_libraries(Multiple-Lights
         ${IOKIT_LIBRARY}
         ${OPENGL_LIBRARY}
         ${COREVIDEO_LIBRARY}
+)
+
+add_executable(Model
+        src/Model-Loading/Model/main.cpp
+        external/include/stb_image/stb_image_impl.cpp
+)
+target_link_libraries(Model
+        glad
+        glfw3
+        ${COCOA_LIBRARY}
+        ${IOKIT_LIBRARY}
+        ${OPENGL_LIBRARY}
+        ${COREVIDEO_LIBRARY}
         assimp::assimp
 )
