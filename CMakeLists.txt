@@ -183,3 +183,16 @@ target_link_libraries(Model
         ${COREVIDEO_LIBRARY}
         assimp::assimp
 )
+
+add_executable(Depth-Testing
+        src/Advanced-OpenGL/Depth-Testing/main.cpp
+        external/include/stb_image/stb_image_impl.cpp
+)
+target_link_libraries(Depth-Testing
+        glad
+        glfw3
+        ${COCOA_LIBRARY}
+        ${IOKIT_LIBRARY}
+        ${OPENGL_LIBRARY}
+        ${COREVIDEO_LIBRARY}
+)
