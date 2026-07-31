@@ -190,6 +190,18 @@ int main()
         singleColor.setMat4("view", view);
         singleColor.setMat4("projection", projection);
 
+        //Plane
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_STENCIL_TEST);
+        shader.use();
+        glBindVertexArray(planeVAO);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, floorTexture);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+        shader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_STENCIL_TEST);
         glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
@@ -201,7 +213,7 @@ int main()
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, cubeTexture);
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-1.0f, -0.5f, -1.0f));
+        model = glm::translate(model, glm::vec3(1.0f, 1.0f, -1.0f));
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -213,7 +225,7 @@ int main()
         singleColor.use();
         glBindVertexArray(cubeVAO);
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-1.0f, -0.5f, -1.0f));
+        model = glm::translate(model, glm::vec3(1.0f, 1.0f, -1.0f));
         model = glm::scale(model, glm::vec3(1.1f));
         singleColor.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -231,7 +243,7 @@ int main()
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, cubeTexture);
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(1.0f, -0.5f, -1.0f));
+        model = glm::translate(model, glm::vec3(-1.0f, 1.0f, -1.0f));
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -243,7 +255,7 @@ int main()
         singleColor.use();
         glBindVertexArray(cubeVAO);
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(1.0f, -0.5f, -1.0f));
+        model = glm::translate(model, glm::vec3(-1.0f, 1.0f, -1.0f));
         model = glm::scale(model, glm::vec3(1.1f));
         singleColor.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
