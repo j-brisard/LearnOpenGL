@@ -222,3 +222,16 @@ target_link_libraries(Blending
         ${OPENGL_LIBRARY}
         ${COREVIDEO_LIBRARY}
 )
+
+add_executable(Face-Culling
+        src/Advanced-OpenGL/Face-Culling/main.cpp
+        external/include/stb_image/stb_image_impl.cpp
+)
+target_link_libraries(Face-Culling
+        glad
+        glfw3
+        ${COCOA_LIBRARY}
+        ${IOKIT_LIBRARY}
+        ${OPENGL_LIBRARY}
+        ${COREVIDEO_LIBRARY}
+)
