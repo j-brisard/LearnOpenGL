@@ -209,3 +209,16 @@ target_link_libraries(Stencil-Testing
         ${OPENGL_LIBRARY}
         ${COREVIDEO_LIBRARY}
 )
+
+add_executable(Blending
+        src/Advanced-OpenGL/Blending/main.cpp
+        external/include/stb_image/stb_image_impl.cpp
+)
+target_link_libraries(Blending
+        glad
+        glfw3
+        ${COCOA_LIBRARY}
+        ${IOKIT_LIBRARY}
+        ${OPENGL_LIBRARY}
+        ${COREVIDEO_LIBRARY}
+)
