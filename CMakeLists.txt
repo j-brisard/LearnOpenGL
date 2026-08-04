@@ -235,3 +235,16 @@ target_link_libraries(Face-Culling
         ${OPENGL_LIBRARY}
         ${COREVIDEO_LIBRARY}
 )
+
+add_executable(Framebuffers
+        src/Advanced-OpenGL/Framebuffers/main.cpp
+        external/include/stb_image/stb_image_impl.cpp
+)
+target_link_libraries(Framebuffers
+        glad
+        glfw3
+        ${COCOA_LIBRARY}
+        ${IOKIT_LIBRARY}
+        ${OPENGL_LIBRARY}
+        ${COREVIDEO_LIBRARY}
+)
