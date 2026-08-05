@@ -17,6 +17,7 @@ void processInput(GLFWwindow *window);
 unsigned int loadTexture(const char *path);
 
 // settings
+//The window dimensions might be different on macos
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
@@ -68,6 +69,10 @@ int main()
         return -1;
     }
 
+    //Get the actuel window size (which can be doubled on MacOS)
+    int frameWidth, frameHeight;
+    glfwGetFramebufferSize(window, &frameWidth, &frameHeight);
+
     // configure global opengl state
     // -----------------------------
     //Depth testing
@@ -82,6 +87,8 @@ int main()
     // build and compile shaders
     // -------------------------
     Shader shader("src/Advanced-OpenGL/Framebuffers/shaders/vertexShader.vsh", "src/Advanced-OpenGL/Framebuffers/shaders/modelFragmentShader.fsh");
+    //screen quad
+    Shader sqShader("src/Advanced-OpenGL/Framebuffers/shaders/vertexShaderFramebuffer.vsh", "src/Advanced-OpenGL/Framebuffers/shaders/fragmentShaderFramebuffer.fsh");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -140,6 +147,48 @@ int main()
         5.0f, -0.5f, -5.0f,  2.0f, 2.0f,
         -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
     };
+
+    //Screen Quad
+    float sqVertices[] = {
+        -1.0f, -1.0f, 0.0f,     0.0f, 0.0f,
+        1.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+        -1.0f, 1.0f, 0.0f,     0.0f, 1.0f,
+
+        -1.0f, -1.0f, 0.0f,     0.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,     1.0f, 0.0f,
+        1.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+    };
+
+    //frame buffers
+    unsigned int fbo;
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    //Texture configuration
+    unsigned int textureColorbuffer;
+    glGenTextures(1, &textureColorbuffer);
+    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+
+    //Renderbuffer object configuration
+    unsigned int rbo;
+    glGenRenderbuffers(1, &rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, frameWidth, frameHeight);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);//Bind the default (glfw) framebuffer
+
     // cube VAO
     unsigned int cubeVAO, cubeVBO;
     glGenVertexArrays(1, &cubeVAO);
@@ -164,10 +213,22 @@ int main()
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
+    //screen quad VAO
+    unsigned int sqVAO, sqVBO;
+    glGenVertexArrays(1, &sqVAO);
+    glGenBuffers(1, &sqVBO);
+    glBindVertexArray(sqVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, sqVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(sqVertices), &sqVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glBindVertexArray(0);
 
     // load textures
     // -------------
-    unsigned int cubeTexture = loadTexture("resources/textures/marble.jpg");
+    unsigned int cubeTexture = loadTexture("resources/textures/container2.png");
     unsigned int floorTexture = loadTexture("resources/textures/metal.png");
 
     // render loop
@@ -186,6 +247,9 @@ int main()
 
         // render
         // ------
+        //Draw the scene into the second framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        glEnable(GL_DEPTH_TEST);
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -214,6 +278,23 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
 
+        //Draw a screen quad in the window framebuffer while using the texture buffer of the second fbo
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDisable(GL_DEPTH_TEST);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glBindVertexArray(sqVAO);
+        sqShader.use();
+        glBindTexture(GL_TEXTURE_2D, textureColorbuffer);//We bind the textureColorBuffer from the hidden frame buffer
+        glDrawArrays(GL_TRIANGLES, 0, 6);//And render it onto a quad
+        /*
+        glDrawArrays(GL_TRIANGLES, 0, 3);//And render it onto a quad
+        glDrawArrays(GL_LINES, 0, 6);//We render half the screen as wireframe to show we're just rendering a quad in the window
+        */
+        glBindVertexArray(0);
+
+
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
@@ -226,6 +307,7 @@ int main()
     glDeleteVertexArrays(1, &planeVAO);
     glDeleteBuffers(1, &cubeVBO);
     glDeleteBuffers(1, &planeVBO);
+    glDeleteVertexArrays(1, &fbo);
 
     glfwTerminate();
     return 0;
