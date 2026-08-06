@@ -325,12 +325,12 @@ int main()
 
     //Cube maps
     unsigned int cubemapTexture = loadCubemap(
-        "resources/textures/skybox/right.jpg",
-        "resources/textures/skybox/left.jpg",
-        "resources/textures/skybox/top.jpg",
-        "resources/textures/skybox/bottom.jpg",
-        "resources/textures/skybox/front.jpg",
-        "resources/textures/skybox/back.jpg"
+        "resources/textures/skybox2/right.jpg",
+        "resources/textures/skybox2/left.jpg",
+        "resources/textures/skybox2/top.jpg",
+        "resources/textures/skybox2/bottom.jpg",
+        "resources/textures/skybox2/front.jpg",
+        "resources/textures/skybox2/back.jpg"
     );
 
     // render loop
