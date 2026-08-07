@@ -15,7 +15,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 unsigned int loadTexture(const char *path);
-void DrawScene(Shader modelShader, Shader skyboxShader,  unsigned int cubeVAO, unsigned int planeVAO, unsigned int skyboxVAO, unsigned int cubeTexture, unsigned int floorTexture, unsigned int cubemapTexture);
+void DrawScene(Shader modelShader, Shader skyboxShader,  unsigned int cubeVAO, unsigned int skyboxVAO, unsigned int cubeTexture, unsigned int cubemapTexture);
 unsigned int loadCubemap(char const *posx, char const *negx, char const *posy, char const *negy, char const *posz, char const *negz);
 
 // settings
@@ -83,6 +83,7 @@ int main()
     glDepthFunc(GL_LEQUAL);
 
     //Face culling
+
     glEnable(GL_CULL_FACE); //Enable culling
     glCullFace(GL_BACK);//Set culling to cull the back faces
     glFrontFace(GL_CCW); //Set the CounterClockWise faces as front faces
@@ -98,59 +99,53 @@ int main()
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float cubeVertices[] = {
-    // Back face
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // Bottom-left
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
-     0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // bottom-right
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // bottom-left
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
-    // Front face
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // top-left
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
-    // Left face
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-left
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right
-    // Right face
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
-    // Bottom face
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f, // top-left
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
-    // Top face
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f  // bottom-left
-    };
+        //Back face
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-    float planeVertices[] = {
-        // positions          // texture Coords (note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode). this will cause the floor texture to repeat)
-         5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-        -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
-        -5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
+        //Front face
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
 
-        5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-        5.0f, -0.5f, -5.0f,  2.0f, 2.0f,
-        -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+        //Left face
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+        //Right face
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+        //Bottom face
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+        //Top face
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
     };
 
     //Screen Quad
@@ -268,22 +263,11 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
-    // plane VAO
-    unsigned int planeVAO, planeVBO;
-    glGenVertexArrays(1, &planeVAO);
-    glGenBuffers(1, &planeVBO);
-    glBindVertexArray(planeVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glBindVertexArray(0);
+
     //screen quad VAO
     unsigned int sqVAO, sqVBO;
     glGenVertexArrays(1, &sqVAO);
@@ -322,7 +306,6 @@ int main()
     // load textures
     // -------------
     unsigned int cubeTexture = loadTexture("resources/textures/container2.png");
-    unsigned int floorTexture = loadTexture("resources/textures/metal.png");
 
     //Cube maps
     unsigned int cubemapTexture = loadCubemap(
@@ -357,7 +340,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         camera.Front = -camera.Front;
 
-        DrawScene(shader, skyboxShader, cubeVAO, planeVAO, skyboxVAO, cubeTexture, floorTexture, cubemapTexture);
+        DrawScene(shader, skyboxShader, cubeVAO, skyboxVAO, cubeTexture, cubemapTexture);
 
         //Draw the scene into the front framebuffer
         glBindFramebuffer(GL_FRAMEBUFFER, frontFBO);
@@ -366,7 +349,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         camera.Front = -camera.Front;
 
-        DrawScene(shader, skyboxShader, cubeVAO, planeVAO, skyboxVAO, cubeTexture, floorTexture, cubemapTexture);
+        DrawScene(shader, skyboxShader, cubeVAO, skyboxVAO, cubeTexture, cubemapTexture);
 
         //Draw a screen quad in the window framebuffer while using the texture buffer of the second frontFBO
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -414,12 +397,10 @@ int main()
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &cubeVAO);
-    glDeleteVertexArrays(1, &planeVAO);
     glDeleteVertexArrays(1, &sqVAO);
     glDeleteVertexArrays(1, &skyboxVAO);
     glDeleteVertexArrays(1, &mirrorVAO);
     glDeleteVertexArrays(1, &cubeVBO);
-    glDeleteVertexArrays(1, &planeVBO);
     glDeleteVertexArrays(1, &sqVBO);
     glDeleteVertexArrays(1, &skyboxVBO);
     glDeleteVertexArrays(1, &mirrorVBO);
@@ -525,7 +506,7 @@ unsigned int loadTexture(char const *path)
     return textureID;
 }
 
-void DrawScene(Shader modelShader, Shader skyboxShader,  unsigned int cubeVAO, unsigned int planeVAO, unsigned int skyboxVAO, unsigned int cubeTexture, unsigned int floorTexture, unsigned int cubemapTexture) {
+void DrawScene(Shader modelShader, Shader skyboxShader,  unsigned int cubeVAO, unsigned int skyboxVAO, unsigned int cubeTexture, unsigned int cubemapTexture) {
 
     glm::mat4 model, view, projection;
     projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -533,13 +514,12 @@ void DrawScene(Shader modelShader, Shader skyboxShader,  unsigned int cubeVAO, u
     //Scene objects rendering
     view = camera.GetViewMatrix();
     modelShader.use();
-    modelShader.setInt("texture1", 0);
     modelShader.setMat4("view", view);
     modelShader.setMat4("projection", projection);
+    modelShader.setVec3("cameraPos", camera.Position);
     // cubes
     glBindVertexArray(cubeVAO);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, cubeTexture);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(-1.0f, 0.000001f, -1.0f));
     modelShader.setMat4("model", model);
@@ -548,11 +528,6 @@ void DrawScene(Shader modelShader, Shader skyboxShader,  unsigned int cubeVAO, u
     model = glm::translate(model, glm::vec3(2.0f, 0.000001f, 0.0f));
     modelShader.setMat4("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
-    // floor
-    glBindVertexArray(planeVAO);
-    glBindTexture(GL_TEXTURE_2D, floorTexture);
-    modelShader.setMat4("model", glm::mat4(1.0f));
-    glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
 
     //Skybox rendering
