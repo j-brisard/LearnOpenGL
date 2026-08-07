@@ -10,6 +10,13 @@ uniform vec3 cameraPos;
 void main()
 {
     vec3 incident = (FragPos-cameraPos);
-    vec3 reflection = reflect(incident,normalize(Normal));
-    FragColor = vec4(texture(skybox, reflection).rgb*0.7, 1.0);
+
+    //Reflection
+    //vec3 r = reflect(incident,normalize(Normal));
+
+    //Refraction
+    float ratio = 1.00 / 1.52;
+    vec3 r = refract(incident, normalize(Normal), ratio);
+
+    FragColor = vec4(texture(skybox, r).rgb*0.7, 1.0);
 }
