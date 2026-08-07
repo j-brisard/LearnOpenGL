@@ -79,7 +79,8 @@ int main()
     // -----------------------------
     //Depth testing
     glEnable(GL_DEPTH_TEST);
-    //glDepthFunc(GL_ALWAYS); // always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
+    //LEQUAL to let skybox pass the depth test (skybox depth is 1.0, which is the default depth)
+    glDepthFunc(GL_LEQUAL);
 
     //Face culling
     glEnable(GL_CULL_FACE); //Enable culling
@@ -526,19 +527,8 @@ unsigned int loadTexture(char const *path)
 
 void DrawScene(Shader modelShader, Shader skyboxShader,  unsigned int cubeVAO, unsigned int planeVAO, unsigned int skyboxVAO, unsigned int cubeTexture, unsigned int floorTexture, unsigned int cubemapTexture) {
 
-    glm::mat4 model = glm::mat4(1.0f);
-    glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-
-    //Skybox rendering
-    skyboxShader.use();
-    skyboxShader.setMat4("view", view);
-    skyboxShader.setMat4("projection", projection);
-    glBindVertexArray(skyboxVAO);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-    glDepthMask(GL_FALSE);//Make sure we don't write in the depth buffer of the scene
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glDepthMask(GL_TRUE);
+    glm::mat4 model, view, projection;
+    projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
     //Scene objects rendering
     view = camera.GetViewMatrix();
@@ -550,6 +540,7 @@ void DrawScene(Shader modelShader, Shader skyboxShader,  unsigned int cubeVAO, u
     glBindVertexArray(cubeVAO);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, cubeTexture);
+    model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(-1.0f, 0.000001f, -1.0f));
     modelShader.setMat4("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -563,6 +554,19 @@ void DrawScene(Shader modelShader, Shader skyboxShader,  unsigned int cubeVAO, u
     modelShader.setMat4("model", glm::mat4(1.0f));
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
+
+    //Skybox rendering
+    model = glm::mat4(1.0f);
+    view = glm::mat4(glm::mat3(camera.GetViewMatrix()));//Remove translations for skybox
+
+    skyboxShader.use();
+    skyboxShader.setMat4("view", view);
+    skyboxShader.setMat4("projection", projection);
+    glBindVertexArray(skyboxVAO);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+    glDepthMask(GL_FALSE);//Make sure we don't write in the depth buffer of the scene
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDepthMask(GL_TRUE);
 }
 
 unsigned int loadCubemap(char const *posx, char const *negx, char const *posy, char const *negy, char const *posz, char const *negz) {
