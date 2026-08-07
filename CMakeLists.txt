@@ -261,3 +261,16 @@ target_link_libraries(Cubemaps
         ${OPENGL_LIBRARY}
         ${COREVIDEO_LIBRARY}
 )
+
+add_executable(Advanced-GLSL
+        src/Advanced-OpenGL/Advanced-GLSL/main.cpp
+        external/include/stb_image/stb_image_impl.cpp
+)
+target_link_libraries(Advanced-GLSL
+        glad
+        glfw3
+        ${COCOA_LIBRARY}
+        ${IOKIT_LIBRARY}
+        ${OPENGL_LIBRARY}
+        ${COREVIDEO_LIBRARY}
+)
